@@ -1,18 +1,17 @@
-﻿using System;
+﻿using nanoCADCommandsReflection.Infrasructure;
+using System;
 using System.ComponentModel;
 using System.Reflection;
-using nanoCADCommandsReflection.Infrasructure;
 using Teigha.Runtime;
 
-namespace nanoCADCommandsReflection.CadCommands
+namespace nanoCADCommandsReflection
 {
-    public static class GetAllCmdsCmd
+    public class ExtensionInitalization :IExtensionApplication
     {
-        [CommandMethod("get-all-commands")]
-        public static void GetAllCommandsCommand()
+        public void Initialize()
         {
             MessageService msgService = new MessageService();
-            
+
             Assembly asm = Assembly.GetExecutingAssembly();
             Type[] expTyped = asm.GetTypes();
             foreach (Type t in expTyped)
@@ -23,7 +22,7 @@ namespace nanoCADCommandsReflection.CadCommands
                     CommandInfo temp = GetCommandInfo(method);
                     if (temp != null)
                     {
-                        if (temp.descriptionAttr !=null)
+                        if (temp.descriptionAttr != null)
                         {
                             msgService.ConsoleMessage(temp.MethodAttr.GlobalName + " >> " +
                                 temp.descriptionAttr.Description ?? "");
@@ -37,7 +36,9 @@ namespace nanoCADCommandsReflection.CadCommands
             }
         }
 
-        private static CommandInfo GetCommandInfo(MethodInfo method)
+        public void Terminate() { }
+
+        private CommandInfo GetCommandInfo(MethodInfo method)
         {
             object[] attrs = method.GetCustomAttributes(true);
 
